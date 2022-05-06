@@ -1028,7 +1028,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
     #---------------------#
     # Standardization
     #---------------------#
-    if (is.null(covvars)) {
+    if (is.null(covvars) | covariance == FALSE) {
         matIden <- mxMatrix(type = "Iden", nrow = nv, ncol = nv, name = "Iden")
         matF1Var <- mxMatrix(type = "Diag", nrow = nv, ncol = nv, values = 1, name = "F1Var")
         matF2Var <- mxMatrix(type = "Full", nrow = nv, ncol = nv, name = "F2Var")
