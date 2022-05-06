@@ -7,7 +7,7 @@ Maintainer: Mirko Ruks <mirko.ruks@uni-bielefeld.de>
 Description: ...
 License: GPL-3
 Encoding: UTF-8
-Imports: OpenMx, tidyverse, umx, stats, dplyr
+Imports: OpenMx, tidyverse, umx, dplyr
 LazyData: true
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)

@@ -1,5 +1,3 @@
-source("E:/Arbeit/Twinlife/Forschung/twinflex/twinflex_helper.R")
-
 ###############################################################################
 #' Estimates different types of twin models
 #' @rdname twinflex
@@ -21,7 +19,9 @@ source("E:/Arbeit/Twinlife/Forschung/twinflex/twinflex_helper.R")
 #' @param dzA a numerical vector indicating the genetic correlation for DZ twins (changeable to adjust for assortative mating). Default is `dzA = 0.5`
 #' @param dzC a numerical vector indicating the shared environmental correlation for DZ twins. Default is `dzC = 1`. Change to `dzC = 0.25` to estimate an ADE model.
 
-#' @import OpenMx tidyverse dplyr stats umx
+#' @import OpenMx tidyverse dplyr
+#' @importFrom umx umxThresholdMatrix
+#' @importFrom stats na.omit pnorm qnorm var
 #' @export
 # Begin function
 twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, dzC = 1) {
