@@ -1040,8 +1040,10 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
         matStdC <- mxAlgebra(expression = iSD %*% AC, name = "stdc")
         matStdE <- mxAlgebra(expression = iSD %*% AE, name = "stde")
         matStdB <- mxAlgebra(expression = iSD %*% AB %*% iSD2, name = "stdb")
+        std <- c(matIden, matF1Var, matF2Var, matFVar, matVar,matSD, matSD2, matStdA, matStdC, matStdE, matStdB)
+    } else {
+        std <- NULL
     }
-    std <- c(matIden, matF1Var, matF2Var, matFVar, matVar,matSD, matSD2, matStdA, matStdC, matStdE, matStdB)
 
     #---------------------#
     # Model Objects
