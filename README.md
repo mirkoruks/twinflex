@@ -27,13 +27,13 @@ Here, the notation is simple. The name of a path coefficient consists of two par
 - Random Wide-formatted covariates (part of the covariance vector) have the label "bcovw"
 - Fixed Wide- and Long-formatted covariates (part of the mean vector) have the label "bcov" 
 
-The suffixes consists of two numerics. The first refers to the position of the dependent variable in the vector given in the `acevars` argument. The second refers to the position of the independent variable in the vector given in the `acevars` or `covvars` argument. So, e.g. a<sub>21</sub> refers to the effect of the genetic component of acevar no. 1 on acevar no. 2.
+The suffixes consists of two numerics. The first refers to the position of the dependent variable in the vector given in the `acevars` argument. The second refers to the position of the independent variable in the vector given in the `acevars` or `covvars` argument. So, e.g. a21 refers to the effect of the genetic component of acevar no. 1 on acevar no. 2.
 
-Interaction effects are somewhat longer. There is a label for all interaction effects "bm", then follows an integer referring to the number of moderator (at the moment it is possible to use 5 different moderators. However, that you are able to use 5 does not imply that you should use 5.). Then comes the "normal" name of the path which is moderated. For example bm1a<sub>21</sub> refers to the interaction of the genetic component of acevar no. 1 on acevar no. 2 by moderator no. 1.
+Interaction effects are somewhat longer. There is a label for all interaction effects "bm", then follows an integer referring to the number of moderator (at the moment it is possible to use 5 different moderators. However, that you are able to use 5 does not imply that you should use 5.). Then comes the "normal" name of the path which is moderated. For example bm1a21 refers to the interaction of the genetic component of acevar no. 1 on acevar no. 2 by moderator no. 1.
 
 ## Variances and Covariances
 ## Means and Intercepts
 ## Thresholds
 
 ## Outlook
-I'm sure I will add a feature that shows the output "in words". For example, for a model with `acevars = c('IQ','yeduc')`, instead of a<sub>21</sub> it will give something like A(IQ) -> yeduc. A phenotypic effect would just be X -> Y
+I'm sure I will add a feature that shows the output "in words". For example, for a model with `acevars = c('IQ','yeduc')`, instead of a21 it will give something like A(IQ) -> yeduc. A phenotypic effect would just be X -> Y
