@@ -7,7 +7,8 @@ In order to install the package from GitHub use:
 ```
 devtools::install_github('mirkoruks/twinflex')
 ```
-
+# The idea
+The basic idea of structural equation modeling is actually quite simple: You estimate the expected covariance matrix and/or means vector as a function of the model parameters. This is also the basic idea of OpenMx. But how do I get from the model parameters to the expected covariance matrix etc.? There are different general models of the covariance structure (e.g. LISREL). For twinflex, I use the RAM notation developed by McArdle and others. 
 
 # Documentation
 In the next time I will add more and more to the documentation, including coding examples.
