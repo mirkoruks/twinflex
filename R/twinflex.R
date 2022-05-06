@@ -1,9 +1,11 @@
 source("E:/Arbeit/Twinlife/Forschung/twinflex/twinflex_helper.R")
 
-
+###############################################################################
 #' Estimates different types of twin models
 #' @rdname twinflex
+#' @description twinflex is a wrapper function for OpenMx. It allows you to estimate complex twin models with just one line of code. Furthermore you can combine different types of twin models (univariate, GxE, with or without covariates, Cholesky vs. ACE-beta) individually.
 #' @param acevars a string vector containing the variables whose variance/covariance you want to decompose. For multivariate models, just use several variables. At the moment only the Cholesky parametrization is implemented. The first variable in the acevars vector is considered to be the first in this causal or temporary sense as well; the second variable as the second and so on. So have in mind to check the order of your variables in the multivariate case.
+#' @param zyg please recode your zygosity variable as follows: 1 = MZ and 2 = DZ, the variable name must be `zyg`
 #' @param data a raw data frame (please just remove any SPSS or Stata labels/notes etc. before).
 #' @param sep a separator referring to the element that separates the variable names and the twin specific suffix. For example, the variables in the data frame are called `IQ_1` for twin 1 and `IQ_2` for twin 2. The `acevars` argument then is `acevars = 'IQ'` and the separator is `separator = '_'`
 #' @param covvars a string vector with covariates. It is possible to use long-formatted (1 variable per twin pair) or wide-formatted (1 variable per twin) variables. Please make sure that you use the wide format only for variables that have a within-twin-pair variance.
@@ -19,11 +21,20 @@ source("E:/Arbeit/Twinlife/Forschung/twinflex/twinflex_helper.R")
 #' @param dzA a numerical vector indicating the genetic correlation for DZ twins (changeable to adjust for assortative mating). Default is `dzA = 0.5`
 #' @param dzC a numerical vector indicating the shared environmental correlation for DZ twins. Default is `dzC = 1`. Change to `dzC = 0.25` to estimate an ADE model.
 
-#' @import OpenMx tidyverse
+#' @import OpenMx stats umx tidyverse dplyr
 #' @export
-###############################################################################
+
+utils::globalVariables(c("Var", "iSD", "iSD2", "zval", "Free", "SEStd", "EstStd", "zvalStd", "AA", "AAM1", "defmod1t1", "AAM2",
+"defmod2t1", "AAM3", "defmod3t1", "AAM4", "defmod4t1", "AAM5", "defmod5t1", "defmod1t2", "defmod2t2", "defmod3t2", "defmod4t2", "defmod5t2", "AC", "ACM1", "ACM2", "ACM3", "ACM4", "ACM5", "AE", "AEM1", "AEM2", "AEM3", "AEM4", "AEM5", "AB", "ABM1", "ABM2", "ABM3", "ABM4", "ABM5", "AMod1", "CMod1", "EMod1", "AGap", "AMod2", "CMod2", "EMod2", "BMod1", "BMod2", "ACL", "ACW", "ACGap", "ABF",
+"ACov", "ACEF", "ALower", "ABFNull", "ACEFNull", "SACE", "SGap", "SUpper", "SCovG1", "SCov", "SCovG2", "SLower", "SACEMZ", "SACEDZ", "SACEVar1", "ANull", "SVar1", "fbin", "expCovVar1", "A", "binCov", "Unit", "dModM", "pModM", "dMCov", "pCovM", "eCovM", "lmeans", "cmeans",
+"F1", "F2", "M", "effMCovFull", "modM", "SMZ", "SDZ", "BMod3", "BMod4", "BMod5", "AMod3", "AMod4", "AMod5", "CMod3", "CMod4", "CMod5", "EMod3", "EMod4", "EMod5", "Mod1Def1", "Mod1Def2", "Mod2Def1", "Mod2Def2", "Mod3Def1", "Mod3Def2", "Mod4Def1", "Mod4Def2", "Mod5Def1", "Mod5Def2", "F1Var", "F2Var", "FVar", "expCovMZ", "Iden"
+))
+
+
+
+
 # Begin function
-twinflex <- function(acevars = NULL, sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, dzC = 1) {
+twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, dzC = 1) {
 
 ############################################
 #-------------- Preparations --------------#
@@ -36,6 +47,10 @@ twinflex <- function(acevars = NULL, sep = "", data = NULL, covvars = NULL, cova
   ###############################
 acevars1 <-    paste0(acevars,sep,"1") # ACE vars twin 1
 acevars2 <-    paste0(acevars,sep,"2") # ACE vars twin 2
+vars_wide <- function(vars, sep, num) {
+   result <- paste(vars, rep(num, each = length(vars)), sep = sep)
+   return(result)
+}
 acevars_wide <- vars_wide(vars = acevars, sep = sep, num = c(1,2))
 check_acevars <- acevars_wide %in% colnames(data)
 if (FALSE %in% check_acevars) {
@@ -899,17 +914,17 @@ for (i in 1:length(ordinal_wide)) {
 categories <- sort(unique(data[,ordinal_wide[i]][!is.na(data[,ordinal_wide[i]])]))
 data[,ordinal_wide[i]] <- mxFactor(data[,ordinal_wide[i]], levels = categories)
 }
-thresh <- umxThresholdMatrix(df = data, fullVarName = ordinal_wide, method = "Mehta", sep = sep)
+thresh <- umxThresholdMatrix(df = data, fullVarNames = ordinal_wide, method = "Mehta", sep = sep)
 }
 
 #----------#
 # Matrix F
 #----------#
 if (covariance == TRUE) {
-matF1 <- mxMatrix(type = "Diag", nrow = ntv+ntc, ncol = ntv+ntc, value = 1, name = "F1")
+matF1 <- mxMatrix(type = "Diag", nrow = ntv+ntc, ncol = ntv+ntc, values = 1, name = "F1")
 matF2 <- mxMatrix(type = "Full", nrow = ntv+ntc, ncol = ntACE, name = "F2")
 } else {
-matF1 <- mxMatrix(type = "Diag", nrow = ntv, ncol = ntv, value = 1, name = "F1")
+matF1 <- mxMatrix(type = "Diag", nrow = ntv, ncol = ntv, values = 1, name = "F1")
 matF2 <- mxMatrix(type = "Full", nrow = ntv, ncol = ntACE, name = "F2")
 }
 
@@ -919,7 +934,7 @@ matF <- mxAlgebra(expression = cbind(F1,F2), name = "Filter")
 #----------#
 # Matrix I
 #----------#
-matI <- mxMatrix(type = "Diag", nrow = ntotal, ncol = ntotal, value = 1, name = "I")
+matI <- mxMatrix(type = "Diag", nrow = ntotal, ncol = ntotal, values = 1, name = "I")
 
 #-------------#
 # Expected Means
@@ -1024,7 +1039,7 @@ def <- c(def, modMean)
 # Standardization
 #---------------------#
 matIden <- mxMatrix(type = "Iden", nrow = nv, ncol = nv, name = "Iden")
-matF1Var <- mxMatrix(type = "Diag", nrow = nv, ncol = nv, value = 1, name = "F1Var")
+matF1Var <- mxMatrix(type = "Diag", nrow = nv, ncol = nv, values = 1, name = "F1Var")
 matF2Var <- mxMatrix(type = "Full", nrow = nv, ncol = nv, name = "F2Var")
 matFVar <- mxAlgebra(expression = cbind(F1Var,F2Var), name = "FVar")
 matVar <- mxAlgebra(expression = (vec2diag(FVar%*%diag2vec(expCovMZ))), name = "Var")
