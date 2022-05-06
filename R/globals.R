@@ -1,0 +1,5 @@
+utils::globalVariables(c("Var", "iSD", "iSD2", "zval", "Free", "SEStd", "EstStd", "zvalStd", "AA", "AAM1", "defmod1t1", "AAM2",
+"defmod2t1", "AAM3", "defmod3t1", "AAM4", "defmod4t1", "AAM5", "defmod5t1", "defmod1t2", "defmod2t2", "defmod3t2", "defmod4t2", "defmod5t2", "AC", "ACM1", "ACM2", "ACM3", "ACM4", "ACM5", "AE", "AEM1", "AEM2", "AEM3", "AEM4", "AEM5", "AB", "ABM1", "ABM2", "ABM3", "ABM4", "ABM5", "AMod1", "CMod1", "EMod1", "AGap", "AMod2", "CMod2", "EMod2", "BMod1", "BMod2", "ACL", "ACW", "ACGap", "ABF",
+"ACov", "ACEF", "ALower", "ABFNull", "ACEFNull", "SACE", "SGap", "SUpper", "SCovG1", "SCov", "SCovG2", "SLower", "SACEMZ", "SACEDZ", "SACEVar1", "ANull", "SVar1", "fbin", "expCovVar1", "A", "binCov", "Unit", "dModM", "pModM", "dMCov", "pCovM", "eCovM", "lmeans", "cmeans",
+"F1", "F2", "M", "effMCovFull", "modM", "SMZ", "SDZ", "BMod3", "BMod4", "BMod5", "AMod3", "AMod4", "AMod5", "CMod3", "CMod4", "CMod5", "EMod3", "EMod4", "EMod5", "Mod1Def1", "Mod1Def2", "Mod2Def1", "Mod2Def2", "Mod3Def1", "Mod3Def2", "Mod4Def1", "Mod4Def2", "Mod5Def1", "Mod5Def2", "F1Var", "F2Var", "FVar", "expCovMZ", "Iden"
+))

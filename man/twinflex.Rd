@@ -6,6 +6,7 @@
 \usage{
 twinflex(
   acevars = NULL,
+  zyg = "zyg",
   sep = "",
   data = NULL,
   covvars = NULL,
@@ -24,6 +25,8 @@ twinflex(
 }
 \arguments{
 \item{acevars}{a string vector containing the variables whose variance/covariance you want to decompose. For multivariate models, just use several variables. At the moment only the Cholesky parametrization is implemented. The first variable in the acevars vector is considered to be the first in this causal or temporary sense as well; the second variable as the second and so on. So have in mind to check the order of your variables in the multivariate case.}
+
+\item{zyg}{please recode your zygosity variable as follows: 1 = MZ and 2 = DZ, the variable name must be \code{zyg}}
 
 \item{sep}{a separator referring to the element that separates the variable names and the twin specific suffix. For example, the variables in the data frame are called \code{IQ_1} for twin 1 and \code{IQ_2} for twin 2. The \code{acevars} argument then is \code{acevars = 'IQ'} and the separator is \code{separator = '_'}}
 
@@ -54,5 +57,5 @@ twinflex(
 \item{dzC}{a numerical vector indicating the shared environmental correlation for DZ twins. Default is \code{dzC = 1}. Change to \code{dzC = 0.25} to estimate an ADE model.}
 }
 \description{
-Estimates different types of twin models
+twinflex is a wrapper function for OpenMx. It allows you to estimate complex twin models with just one line of code. Furthermore you can combine different types of twin models (univariate, GxE, with or without covariates, Cholesky vs. ACE-beta) individually.
 }
