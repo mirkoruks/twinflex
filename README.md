@@ -36,4 +36,4 @@ Interaction effects are somewhat longer. There is a label for all interaction ef
 ## Thresholds
 
 ## Outlook
-I'm sure I will add a feature that shows the output "in words". For example, for a model with `acevars = c('IQ','yeduc')`, instead of a21 it will give something like A(IQ) -> yeduc. A phenotypic effect would just be X -> Y
+I'm sure I will add a feature that shows the output "in words". For example, for a model with `acevars = c('IQ','yeduc')`, instead of a21 it will give something like A(IQ) -> yeduc. A phenotypic effect would just be X -> Y. A moderation would be something like X -> Y BY M
