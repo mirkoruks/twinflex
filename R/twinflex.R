@@ -10,6 +10,7 @@
 #' @param covariance a logical to define whether the covariates should be modelled as random covariates in the model for the covariance matrix or as fixed covariates in the model for the mean.
 #' @param type a string vector to define the "type" of a multivariate model. For a Cholesky model (default) use `type = 'Chol'`. For the "ACE-beta" model, use `type = 'aceb'`
 #' @param moderation a string vector indicating a moderated path coefficient. Notation is comparable to MPLUS. The effects of covariates cannot be moderated. For a univariate twin model the argument `moderation = Y BY Mod` with `Y` as the outcome and `Mod` as the moderator refers to a moderation of the effects of the ACE components on `Y` by `Mod`. For a multivariate model there are two options which can be combined: a) the argument `moderation = Y BY Mod` refers to a moderation of the effects of the ACE components unique to `Y` on `Y` by `Mod`; b) the argument `moderation = X -> Y BY Mod` refers to a moderation of the effects of the ACE components of `X` on `Y` (and the phenotypic effect of `X` on `Y` when `type = 'aceb'`) by `Mod`.
+#' @param ModCov a string vector indicating whether main effect of moderator should be estimated for all variables (`ModCov = "All"`) or for only the variables for which the incoming paths are moderated (`ModCov = "DV"`). Default is `ModCov = "DV"`.
 #' @param ordinal a string vector defining the ordinal variables (binary or ordinal)
 #' @param TryHard a logical to define whether TryHard should be used (see OpenMx documentation for details). Recommended for complex models.
 #' @param Tries a numeric indicating the number of attempts to run the model in addition to the first (see OpenMx documentation for details). Default is 10.
@@ -24,7 +25,7 @@
 #' @importFrom stats na.omit pnorm qnorm var
 #' @export
 # Begin function
-twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, dzC = 1) {
+twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ModCov = "DV", ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, dzC = 1) {
 
     ############################################
     #-------------- Preparations --------------#
@@ -601,7 +602,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
             CovSLabCL[upper.tri(CovSLabCL, diag = FALSE)] <- (CovSLabCL)[lower.tri(CovSLabCL, diag = FALSE)]
             diag(CovSLabCL) <- paste0("varcl",1:ncl)
             if (ncw > 0) {
-                CovSLabCLW <- matrix(paste0(rep(paste0("covcl",1:ncl), each = ntcw), rep(paste0("bw",1:ncw), 2)), nrow = ntcw, ncol = ntcl)
+                CovSLabCLW <- matrix(paste0(rep(paste0("covcl",1:ncl), each = ntcw), rep(paste0("cw",1:ncw), 2)), nrow = ntcw, ncol = ntcl)
                 CovSLabCov <- rbind(cbind(CovSLabCL, t(CovSLabCLW)),
                                     cbind(CovSLabCLW, CovSLabCW))
             } else {
@@ -747,8 +748,14 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
         pathModMFree <- matrix(FALSE, nrow = 10, ncol = ntv)
         for (i in 1:length(moderatorlist2)) {
             if (!(uniquemod[i] %in% acevars)) {
+                if (ModCov == "DV") {
                 pathModMFree[((i*2)-1),unique(moderatorlist2[[i]][["AV"]])] <- TRUE
                 pathModMFree[((i*2)),unique(moderatorlist2[[i]][["AV"]])+nv] <- TRUE
+                }
+                if (ModCov == "All" & i <= length(moderator)) {
+                pathModMFree[((i*2)-1),1:nv] <- TRUE
+                pathModMFree[((i*2)),((1:nv)+nv)] <- TRUE
+                }
             }
         }
 
