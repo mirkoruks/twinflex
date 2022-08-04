@@ -41,7 +41,7 @@ twinflex(
 
 \item{moderation}{a string vector indicating a moderated path coefficient. Notation is comparable to MPLUS. The effects of covariates cannot be moderated. For a univariate twin model the argument \verb{moderation = Y BY Mod} with \code{Y} as the outcome and \code{Mod} as the moderator refers to a moderation of the effects of the ACE components on \code{Y} by \code{Mod}. For a multivariate model there are two options which can be combined: a) the argument \verb{moderation = Y BY Mod} refers to a moderation of the effects of the ACE components unique to \code{Y} on \code{Y} by \code{Mod}; b) the argument \verb{moderation = X -> Y BY Mod} refers to a moderation of the effects of the ACE components of \code{X} on \code{Y} (and the phenotypic effect of \code{X} on \code{Y} when \code{type = 'aceb'}) by \code{Mod}.}
 
-\item{ModCov}{a string vector indicating whether main effect of moderator should be estimated for all variables (\code{ModCov = "All"}) or for only the variables for which the incoming paths are moderated (\code{ModCov = "DV"}). Default is \code{ModCov = "DV"}.}
+\item{ModCov}{a string vector indicating whether main effect of moderator should be estimated for all variables (\code{ModCov = "All"}) or for only the variables for which the incoming paths are moderated (\code{ModCov = "DV"}). Alternatively, with \code{ModCov = "No"} no main effects in the mean vector are estimated. Default is \code{ModCov = "DV"}.}
 
 \item{ordinal}{a string vector defining the ordinal variables (binary or ordinal)}
 
