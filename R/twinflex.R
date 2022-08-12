@@ -636,7 +636,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
                 CovSValCov <- CovSValCL
             }
         } else {
-            CovSValCov <- CovSValCWW
+            CovSValCov <- CovSValCW
         }
 
         if (any(is.na(diag(CovSValCov)))) {
