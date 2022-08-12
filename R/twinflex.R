@@ -3,7 +3,7 @@
 #' @rdname twinflex
 #' @description twinflex is a wrapper function for OpenMx. It allows you to estimate complex twin models with just one line of code. Furthermore you can combine different types of twin models (univariate, GxE, with or without covariates, Cholesky vs. ACE-beta) individually.
 #' @param acevars a string vector containing the variables whose variance/covariance you want to decompose. For multivariate models, just use several variables. At the moment only the Cholesky parametrization is implemented. The first variable in the acevars vector is considered to be the first in this causal or temporary sense as well; the second variable as the second and so on. So have in mind to check the order of your variables in the multivariate case.
-#' @param zyg please recode your zygosity variable as follows: 1 = MZ and 2 = DZ, the variable name must be `zyg`
+#' @param zyg please recode your zygosity variable as follows: 1 = MZ and 2 = DZ. IMPORTANT: the variable name must be `zyg` !!!
 #' @param data a raw data frame (please just remove any SPSS or Stata labels/notes etc. before).
 #' @param sep a separator referring to the element that separates the variable names and the twin specific suffix. For example, the variables in the data frame are called `IQ_1` for twin 1 and `IQ_2` for twin 2. The `acevars` argument then is `acevars = 'IQ'` and the separator is `separator = '_'`
 #' @param covvars a string vector with covariates. It is possible to use long-formatted (1 variable per twin pair) or wide-formatted (1 variable per twin) variables. Please make sure that you use the wide format only for variables that have a within-twin-pair variance.
@@ -32,6 +32,9 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
     ############################################
     if (is.null(covvars) & covariance == TRUE) {
         stop("If you don't provide any covariates, please set covariance = FALSE")
+    }
+    if (zyg != "zyg" | any(colnames(data) != "zyg")) {
+        stop("Please make sure that zygosity variable has name <zyg>")
     }
     ###############################
     # Select acevars
@@ -454,9 +457,10 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
     if (!is.null(covvars) & covariance == TRUE) {
         if (ncl > 0) {
             LabCovLong <- paste0("bcovl", 1:nv, rep(1:ncl, each = nv))
-            Ycov1 <- as.matrix(subset(na.omit(data), select = acevars1))
-            Ycov2 <- as.matrix(subset(na.omit(data), select = acevars2))
-            XcovLong <- cbind(1,as.matrix(subset(na.omit(data), select = c(covvars_long))))
+            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars1, covvars2)))
+            Ycov1 <- as.matrix(subset(data_small, select = acevars1))
+            Ycov2 <- as.matrix(subset(data_small, select = acevars2))
+            XcovLong <- cbind(1,as.matrix(subset(data_small, select = c(covvars_long))))
             pathCovLongStart1 <- (t(solve(t(XcovLong)%*%XcovLong)%*%t(XcovLong)%*%Ycov1))[,2:ncol(XcovLong)]
             pathCovLongStart2 <- (t(solve(t(XcovLong)%*%XcovLong)%*%t(XcovLong)%*%Ycov2))[,2:ncol(XcovLong)]
             ValCovLong <- (pathCovLongStart1 + pathCovLongStart2) / 2
@@ -465,11 +469,12 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
         }
         if (ncw > 0) {
             # Wide
+            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars1, covvars2)))
             LabCovWide <- paste0("bcovw", 1:nv, rep(1:ncw, each = nv))
-            Ycov1 <- as.matrix(subset(na.omit(data), select = acevars1))
-            Ycov2 <- as.matrix(subset(na.omit(data), select = acevars2))
-            XCovWide1 <- cbind(1,as.matrix(subset(na.omit(data), select = c(covvars1))))
-            XCovWide2 <- cbind(1,as.matrix(subset(na.omit(data), select = c(covvars2))))
+            Ycov1 <- as.matrix(subset(data_small, select = acevars1))
+            Ycov2 <- as.matrix(subset(data_small, select = acevars2))
+            XCovWide1 <- cbind(1,as.matrix(subset(data_small, select = c(covvars1))))
+            XCovWide2 <- cbind(1,as.matrix(subset(data_small, select = c(covvars2))))
             pathCovWideStart11 <- (t(solve(t(XCovWide1)%*%XCovWide1)%*%t(XCovWide1)%*%Ycov1))[,2:ncol(XCovWide1)]
             pathCovWideStart21 <- (t(solve(t(XCovWide1)%*%XCovWide1)%*%t(XCovWide1)%*%Ycov2))[,2:ncol(XCovWide1)]
             pathCovWideStart12 <- (t(solve(t(XCovWide2)%*%XCovWide2)%*%t(XCovWide2)%*%Ycov1))[,2:ncol(XCovWide2)]
@@ -791,9 +796,10 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
 
         # Long
         if (ncl > 0) {
-            Ycov1 <- as.matrix(subset(na.omit(data), select = c(acevars1,acevars1)))
-            Ycov2 <- as.matrix(subset(na.omit(data), select = c(acevars2,acevars2)))
-            XcovLong <- cbind(1,as.matrix(subset(na.omit(data), select = c(covvars_long))))
+            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars1, covvars2)))
+            Ycov1 <- as.matrix(subset(data_small, select = c(acevars1,acevars1)))
+            Ycov2 <- as.matrix(subset(data_small, select = c(acevars2,acevars2)))
+            XcovLong <- cbind(1,as.matrix(subset(data_small, select = c(covvars_long))))
             pathCovLongStart1 <- (t(solve(t(XcovLong)%*%XcovLong)%*%t(XcovLong)%*%Ycov1))[,2:ncol(XcovLong)]
             pathCovLongStart2 <- (t(solve(t(XcovLong)%*%XcovLong)%*%t(XcovLong)%*%Ycov2))[,2:ncol(XcovLong)]
             ValCovLong <- t((pathCovLongStart1 + pathCovLongStart2) / 2)
@@ -804,10 +810,11 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
         }
         if (ncw > 0) {
             # Wide
-            Ycov1 <- as.matrix(subset(na.omit(data), select = c(acevars1,acevars1)))
-            Ycov2 <- as.matrix(subset(na.omit(data), select = c(acevars2,acevars2)))
-            XCovWide1 <- cbind(1,as.matrix(subset(na.omit(data), select = c(covvars1))))
-            XCovWide2 <- cbind(1,as.matrix(subset(na.omit(data), select = c(covvars2))))
+            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars1, covvars2)))
+            Ycov1 <- as.matrix(subset(data_small, select = c(acevars1,acevars1)))
+            Ycov2 <- as.matrix(subset(data_small, select = c(acevars2,acevars2)))
+            XCovWide1 <- cbind(1,as.matrix(subset(data_small, select = c(covvars1))))
+            XCovWide2 <- cbind(1,as.matrix(subset(data_small, select = c(covvars2))))
             pathCovWideStart11 <- (t(solve(t(XCovWide1)%*%XCovWide1)%*%t(XCovWide1)%*%Ycov1))[,2:ncol(XCovWide1)]
             pathCovWideStart21 <- (t(solve(t(XCovWide1)%*%XCovWide1)%*%t(XCovWide1)%*%Ycov2))[,2:ncol(XCovWide1)]
             pathCovWideStart12 <- (t(solve(t(XCovWide2)%*%XCovWide2)%*%t(XCovWide2)%*%Ycov1))[,2:ncol(XCovWide2)]
