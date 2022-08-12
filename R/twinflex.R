@@ -33,7 +33,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
     if (is.null(covvars) & covariance == TRUE) {
         stop("If you don't provide any covariates, please set covariance = FALSE")
     }
-    if (zyg != "zyg" | any(colnames(data) != "zyg")) {
+    if (zyg != "zyg" | !(any(colnames(data) == "zyg"))) {
         stop("Please make sure that zygosity variable has name <zyg>")
     }
     ###############################
