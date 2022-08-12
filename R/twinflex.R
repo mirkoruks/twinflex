@@ -457,7 +457,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
     if (!is.null(covvars) & covariance == TRUE) {
         if (ncl > 0) {
             LabCovLong <- paste0("bcovl", 1:nv, rep(1:ncl, each = nv))
-            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars1, covvars2)))
+            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars_long)))
             Ycov1 <- as.matrix(subset(data_small, select = acevars1))
             Ycov2 <- as.matrix(subset(data_small, select = acevars2))
             XcovLong <- cbind(1,as.matrix(subset(data_small, select = c(covvars_long))))
@@ -796,7 +796,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
 
         # Long
         if (ncl > 0) {
-            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars1, covvars2)))
+            data_small <- na.omit(subset(data, select = c(acevars1, acevars2, covvars_long)))
             Ycov1 <- as.matrix(subset(data_small, select = c(acevars1,acevars1)))
             Ycov2 <- as.matrix(subset(data_small, select = c(acevars2,acevars2)))
             XcovLong <- cbind(1,as.matrix(subset(data_small, select = c(covvars_long))))
