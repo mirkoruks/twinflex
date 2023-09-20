@@ -9,5 +9,5 @@ License: GPL-3
 Encoding: UTF-8
 Imports: OpenMx, tidyverse, umx, dplyr
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)

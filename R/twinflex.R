@@ -18,6 +18,7 @@
 #' @param Optimizer a string vector indicating the optimizer. Default is `Optimizer = 'SLSQP'` (see OpenMx documentation for details).
 #' @param lboundACE a logical indicating whether to set lower bounds for the estimation of the univariate ACE effects.
 #' @param dzA a numerical vector indicating the genetic correlation for DZ twins (changeable to adjust for assortative mating). Default is `dzA = 0.5`
+#' @param mzA a numerical vector indicating the genetic correlation for MZ twins (changeable e.g., when zygosity is unknown). Default is `mzA = 1`
 #' @param dzC a numerical vector indicating the shared environmental correlation for DZ twins. Default is `dzC = 1`. Change to `dzC = 0.25` to estimate an ADE model.
 
 #' @import OpenMx tidyverse dplyr
@@ -25,11 +26,21 @@
 #' @importFrom stats na.omit pnorm qnorm var
 #' @export
 # Begin function
-twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ModCov = "DV", ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, dzC = 1) {
+twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars = NULL, covariance = FALSE, type = "Chol", moderation = NULL, ModCov = "DV", ordinal = NULL, TryHard = FALSE, Tries = 10, exh = TRUE, Optimizer = "SLSQP", lboundACE = TRUE, dzA = 0.5, mzA = 1, dzC = 1) {
 
     ############################################
     #-------------- Preparations --------------#
     ############################################
+    if (is.null(acevars)) {
+        stop("Please provide variables for the ACE decomposition")
+    }
+    if (is.null(data)) {
+        stop("Please provide a data frame.")
+    }
+    data <- data.frame(data)
+    if (all(unique(data$zyg) == c(1,2)) == FALSE) {
+        stop("Please provide a numeric vector named <zyg> with 1=MZ and 2=DZ. Please drop all labels importet from Stata or SPSS files.")
+    }
     if (is.null(covvars) & covariance == TRUE) {
         stop("If you don't provide any covariates, please set covariance = FALSE")
     }
@@ -571,11 +582,11 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
                         nrow = nv,
                         ncol = nv,
                         name = "SGap")
-
-    SMat1MZ <- mxAlgebra(expression = rbind(cbind(SACE,SGap,SGap,SACE,SGap,SGap),
+    matmzA <- mxMatrix(type = "Full", nrow =  1, ncol = 1, free = FALSE, values = mzA, name = "mzA")
+    SMat1MZ <- mxAlgebra(expression = rbind(cbind(SACE,SGap,SGap,mzA*SACE,SGap,SGap),
                                             cbind(SGap,SACE,SGap,SGap,SACE,SGap),
                                             cbind(SGap,SGap,SACE,SGap,SGap,SGap),
-                                            cbind(SACE,SGap,SGap,SACE,SGap,SGap),
+                                            cbind(mzA*SACE,SGap,SGap,SACE,SGap,SGap),
                                             cbind(SGap,SACE,SGap,SGap,SACE,SGap),
                                             cbind(SGap,SGap,SGap,SGap,SGap,SACE)),
                          name = "SACEMZ")
@@ -1001,7 +1012,7 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
     pars <- c(matA, matC, matE, matB, M0, AMatGap, SMatGap, AMatLower, SMatUpper, SMatLower, SMatACE, matF1, matF2, matF, matI, latentmeans, fitfun) # hier alle Matrizen ohne freie Parameter
     def <- c(mean, AMat, matBFull, matACEFull) # hier alle Matrizen, die Definitionsvariablen enthalten
     MZobj <- c(SMat1MZ, SMatMZ, covMZ, dataMZ, expMZ) # MZ spezifische Objekte
-    DZobj <- c(SMat1DZ, SMatDZ, covDZ, dataDZ, expDZ, matdzA, matdzC) # DZ spezifische Objekte
+    DZobj <- c(SMat1DZ, SMatDZ, covDZ, dataDZ, expDZ, matdzA, matmzA, matdzC) # DZ spezifische Objekte
 
     if (!is.null(covvars) & covariance == TRUE) {
         if (ncl > 0) {

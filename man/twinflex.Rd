@@ -21,6 +21,7 @@ twinflex(
   Optimizer = "SLSQP",
   lboundACE = TRUE,
   dzA = 0.5,
+  mzA = 1,
   dzC = 1
 )
 }
@@ -56,6 +57,8 @@ twinflex(
 \item{lboundACE}{a logical indicating whether to set lower bounds for the estimation of the univariate ACE effects.}
 
 \item{dzA}{a numerical vector indicating the genetic correlation for DZ twins (changeable to adjust for assortative mating). Default is \code{dzA = 0.5}}
+
+\item{mzA}{a numerical vector indicating the genetic correlation for MZ twins (changeable e.g., when zygosity is unknown). Default is \code{mzA = 1}}
 
 \item{dzC}{a numerical vector indicating the shared environmental correlation for DZ twins. Default is \code{dzC = 1}. Change to \code{dzC = 0.25} to estimate an ADE model.}
 }
