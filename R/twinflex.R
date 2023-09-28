@@ -583,6 +583,11 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
                         ncol = nv,
                         name = "SGap")
     matmzA <- mxMatrix(type = "Full", nrow =  1, ncol = 1, free = FALSE, values = mzA, name = "mzA")
+    print(matmzA)
+    matdzA <- mxMatrix(type = "Full", nrow =  1, ncol = 1, free = FALSE, values = dzA, name = "dzA")
+    matdzC <- mxMatrix(type = "Full", nrow = 1, ncol = 1, free = FALSE, values = dzC, name = "dzC")
+
+
     SMat1MZ <- mxAlgebra(expression = rbind(cbind(SACE,SGap,SGap,mzA*SACE,SGap,SGap),
                                             cbind(SGap,SACE,SGap,SGap,SACE,SGap),
                                             cbind(SGap,SGap,SACE,SGap,SGap,SGap),
@@ -590,10 +595,6 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
                                             cbind(SGap,SACE,SGap,SGap,SACE,SGap),
                                             cbind(SGap,SGap,SGap,SGap,SGap,SACE)),
                          name = "SACEMZ")
-
-    matdzA <- mxMatrix(type = "Full", nrow =  1, ncol = 1, free = FALSE, values = dzA, name = "dzA")
-    matdzC <- mxMatrix(type = "Full", nrow = 1, ncol = 1, free = FALSE, values = dzC, name = "dzC")
-
     SMat1DZ <- mxAlgebra(expression = rbind(cbind(SACE,SGap,SGap,dzA*SACE,SGap,SGap),
                                             cbind(SGap,SACE,SGap,SGap,dzC*SACE,SGap),
                                             cbind(SGap,SGap,SACE,SGap,SGap,SGap),
@@ -765,11 +766,11 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
         for (i in 1:length(moderatorlist2)) {
             if (!(uniquemod[i] %in% acevars)) {
                 if (ModCov == "DV") {
-                pathModMFree[((i*2)-1),unique(moderatorlist2[[i]][["AV"]])] <- TRUE
-                pathModMFree[((i*2)),unique(moderatorlist2[[i]][["AV"]])+nv] <- TRUE
+                    pathModMFree[((i*2)-1),unique(moderatorlist2[[i]][["AV"]])] <- TRUE
+                    pathModMFree[((i*2)),unique(moderatorlist2[[i]][["AV"]])+nv] <- TRUE
                 } else if (ModCov == "All" & i <= length(moderator)) {
-                pathModMFree[((i*2)-1),1:nv] <- TRUE
-                pathModMFree[((i*2)),((1:nv)+nv)] <- TRUE
+                    pathModMFree[((i*2)-1),1:nv] <- TRUE
+                    pathModMFree[((i*2)),((1:nv)+nv)] <- TRUE
                 } else if (ModCov == "No") {
                     next
                 }
@@ -1011,8 +1012,8 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
 
     pars <- c(matA, matC, matE, matB, M0, AMatGap, SMatGap, AMatLower, SMatUpper, SMatLower, SMatACE, matF1, matF2, matF, matI, latentmeans, fitfun) # hier alle Matrizen ohne freie Parameter
     def <- c(mean, AMat, matBFull, matACEFull) # hier alle Matrizen, die Definitionsvariablen enthalten
-    MZobj <- c(SMat1MZ, SMatMZ, covMZ, dataMZ, expMZ) # MZ spezifische Objekte
-    DZobj <- c(SMat1DZ, SMatDZ, covDZ, dataDZ, expDZ, matdzA, matmzA, matdzC) # DZ spezifische Objekte
+    MZobj <- c(SMat1MZ, SMatMZ, covMZ, dataMZ, matmzA, expMZ) # MZ spezifische Objekte
+    DZobj <- c(SMat1DZ, SMatDZ, covDZ, dataDZ, expDZ, matdzA, matdzC) # DZ spezifische Objekte
 
     if (!is.null(covvars) & covariance == TRUE) {
         if (ncl > 0) {
