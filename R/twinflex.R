@@ -583,7 +583,6 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
                         ncol = nv,
                         name = "SGap")
     matmzA <- mxMatrix(type = "Full", nrow =  1, ncol = 1, free = FALSE, values = mzA, name = "mzA")
-    print(matmzA)
     matdzA <- mxMatrix(type = "Full", nrow =  1, ncol = 1, free = FALSE, values = dzA, name = "dzA")
     matdzC <- mxMatrix(type = "Full", nrow = 1, ncol = 1, free = FALSE, values = dzC, name = "dzC")
 
