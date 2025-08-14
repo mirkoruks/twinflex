@@ -363,7 +363,11 @@ twinflex <- function(acevars = NULL, zyg = "zyg", sep = "", data = NULL, covvars
                     UV <- AV
                 }
                 AmodLab[AV,UV] <- paste0("bm",i,"a",AV,UV)
-                CmodLab[AV,UV] <- paste0("bm",i,"c",AV,UV)
+                if (dzC == 0.25) {
+                    CmodLab[AV,UV] <- paste0("bm",i,"d",AV,UV)
+                } else {
+                    CmodLab[AV,UV] <- paste0("bm",i,"c",AV,UV)
+                }
                 EmodLab[AV,UV] <- paste0("bm",i,"e",AV,UV)
                 BmodLab[AV,UV] <- paste0("bm",i,"b",AV,UV)
             }
